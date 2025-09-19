@@ -17,6 +17,7 @@ public class OneLevelGreedy extends CheckersSearcher {
 
     @Override
     public int numNodesExpanded() {
+
         return numNodes;
     }
 

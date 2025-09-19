@@ -21,6 +21,8 @@ public class Checkerboard {
     private int repeatingCol;
     private Optional<Piece> board[] = (Optional<Piece>[]) new Optional<?>[numSquares];
     private ArrayList<Move> moveSequence;
+    public int numCurrentBlackPieces = numStartingPieces;
+    public int numCurrentRedPieces = numStartingPieces;
 
     // Invariants:
     //   minRow() < maxRow(); minCol() < maxCol()
@@ -507,4 +509,6 @@ public class Checkerboard {
     private int getCol(int index) {
         return ((index % (sideSquares / 2)) * 2) + (1 - (getRow(index) % 2));
     }
+
+
 }
