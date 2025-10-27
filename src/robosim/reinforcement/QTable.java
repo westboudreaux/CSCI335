@@ -1,5 +1,6 @@
 package robosim.reinforcement;
 
+import java.awt.*;
 import java.util.Arrays;
 
 public class QTable {
@@ -13,26 +14,42 @@ public class QTable {
     //  Calculate the learning rate using this formula: 1/(1 + total visits for this (state, action) pair/rateConstant)
     //  Should pass QTableTest.testLearningRate().
     public double getLearningRate(int state, int action) {
-        return 0.0;
+        return ((double) 1 /(1 + visits[state][action]/ rateConstant));
     }
 
     // TODO: Find the action for the given state that has the highest q value.
     //  Should pass QTableTest.testBestAction()
     public int getBestAction(int state) {
-        return -1;
+        int currentBest = 0;
+        for(int i = 0; i < visits[state].length; i++)  {
+            if (getQ(state,i) > getQ(state, currentBest)){
+                currentBest = i;
+            }
+        }
+        return currentBest;
     }
 
     // TODO: Returns true if any action for this state is below the target
     //  visits. Returns false otherwise.
     //  Should pass QTableTest.testIsExploring()
     public boolean isExploring(int state) {
+        for (int actions : visits[state]) {
+            if (actions < this.targetVisits)
+                return true;
+        }
         return false;
     }
 
     // TODO: Returns the least visited action in state.
     //  Should pass QTableTest.testLeastVisitedAction()
     public int leastVisitedAction(int state) {
-        return -1;
+        int shortestVisits = 0;
+        for(int i = 0; i < visits[state].length; i++) {
+            if (visits[state][i] < visits[state][shortestVisits]){
+                shortestVisits = i;
+            }
+        }
+       return shortestVisits;
     }
 
     // TODO:
@@ -49,6 +66,12 @@ public class QTable {
     //  Q update formula:
     //    Q(s, a) = (1 - learningRate) * Q(s, a) + learningRate * (discount * maxa(Q(s', a)) + r(s))
     public int senseActLearn(int newState, double reward) {
+        double update = (1 - getLearningRate(getLastState(), getLastAction()) *
+                getQ(newState, getBestAction(newState)) + getLearningRate(newState, getBestAction(newState))
+        * getQ(newState, getBestAction(newState)) + (getLearningRate(newState, getBestAction(newState))
+        * ( discount *  getBestAction(getLastState()) + reward)));
+
+
         return -1;
     }
 
