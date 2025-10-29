@@ -66,13 +66,21 @@ public class QTable {
     //  Q update formula:
     //    Q(s, a) = (1 - learningRate) * Q(s, a) + learningRate * (discount * maxa(Q(s', a)) + r(s))
     public int senseActLearn(int newState, double reward) {
-        double update = (1 - getLearningRate(getLastState(), getLastAction()) *
-                getQ(newState, getBestAction(newState)) + getLearningRate(newState, getBestAction(newState))
-        * getQ(newState, getBestAction(newState)) + (getLearningRate(newState, getBestAction(newState))
-        * ( discount *  getBestAction(getLastState()) + reward)));
+        double update = getQ(getLastState(),getLastAction()) + getLearningRate(getLastState(),getLastAction()) *
+                (reward + discount * getQ(newState, getBestAction(newState)) - getQ(getLastState(),getLastAction()));
+        q[getLastState()][getLastAction()] = update;
+        visits[getLastState()][getLastAction()] += 1;
+        int action;
+        if (isExploring(newState)) {
+            action = leastVisitedAction(newState);
+        } else {
+            action = getBestAction(newState);
+        }
 
+        lastAction = action;
+        lastState = newState;
 
-        return -1;
+        return action;
     }
 
     public QTable(int states, int actions, int startState, int targetVisits, int rateConstant, double discount) {
