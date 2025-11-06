@@ -19,6 +19,10 @@ import java.util.Set;
 
 public class DrawingTree implements Classifier<Drawing,String>, PixelUser {
 	private DecisionTree<Drawing,String, DrawingPoint, PixelUse> root;
+    // DrawingPoint is the x,y coordinate looking at currently
+    // PixelUse is an Enum that can be ON or OFF
+
+
 	private int width, height;
 
 	@Override

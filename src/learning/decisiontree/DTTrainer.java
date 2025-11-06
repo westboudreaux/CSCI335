@@ -4,6 +4,7 @@ import core.Duple;
 import learning.core.Histogram;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -49,12 +50,17 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
 	private DecisionTree<V,L,F,FV> train(ArrayList<Duple<V,L>> data) {
 		// TODO: Implement the decision tree learning algorithm
 		if (numLabels(data) == 1) {
+            return new DTLeaf<>(train().classify(data.get(0).getFirst()));
 			// TODO: Return a leaf node consisting of the only label in data
-			return null;
+            // is a matter of calling the dt leaf constructor to create a leaf node using the only label that is available
 		} else {
 			// TODO: Return an interior node.
-			//  If restrictFeatures is false, call allFeatures.apply() to get a complete list
-			//  of features and values, all of which you should consider when splitting.
+            if (!restrictFeatures){
+                allFeatures.apply(data);
+            }
+            else {
+                reducedFeatures(data, allFeatures, 2); // TODO: what is the target number supposed to be??
+            }
 			//  If restrictFeatures is true, call reducedFeatures() to get sqrt(# features)
 			//  of possible features/values as candidates for the split. In either case,
 			//  for each feature/value combination, use the splitOn() function to break the
@@ -87,10 +93,24 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
 	public static <V,L> double getGini(ArrayList<Duple<V,L>> data) {
 		// TODO: Calculate the Gini coefficient:
 		//  For each label, calculate its portion of the whole (p_i).
+        Histogram<L> h = new Histogram<>();
+        ArrayList<Double> portionsSQ = new ArrayList<>();
+        Double sum = 0.0;
+        for (Duple<V,L> datum: data) {
+            portionsSQ.add(h.getPortionFor(datum.getSecond()) * h.getPortionFor(datum.getSecond()));
+        }
+        for (Double item: portionsSQ) {
+            sum += item;
+        }
+
+        return 1.0 - sum;
+
+
+
 		//  Use of a Histogram<L> for this purpose is recommended.
 		//  Gini coefficient is 1 - sum(for all labels i, p_i^2)
 		//  Should pass DTTest.testGini().
-		return 1.0;
+
 	}
 
 	public static <V,L> double gain(ArrayList<Duple<V,L>> parent, ArrayList<Duple<V,L>> child1,

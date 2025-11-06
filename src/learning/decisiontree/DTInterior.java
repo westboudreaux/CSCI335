@@ -10,10 +10,12 @@ import java.util.function.Function;
 
 public class DTInterior<V, L, F, FV extends Comparable<FV>> implements DecisionTree<V,L,F,FV> {
 	private DecisionTree<V,L,F,FV> left, right;
-	private F decisionFeature;
-	private FV maxFeatureValue;
+	private F decisionFeature; // what is sitting inside the interior node that tells it which direction to send an example
+	private FV maxFeatureValue; // is the largest feature value an object can have that will cause it to be true
+    // every feature value extends the comprable interface. Use compareto, if you get <= 0 relative to maxFeatureValue
+    // that will be true and go to the left
 	private BiFunction<V,F,FV> getFeatureValue;
-	private Function<FV,FV> successor;
+	private Function<FV,FV> successor; // just used in the visualization so don't worry about this
 	
 	public DTInterior(F decisionFeature, FV maxFeatureValue, DecisionTree<V,L,F,FV> left, DecisionTree<V,L,F,FV> right,
 					  BiFunction<V,F,FV> getFeatureValue, Function<FV,FV> successor) {
@@ -27,11 +29,12 @@ public class DTInterior<V, L, F, FV extends Comparable<FV>> implements DecisionT
 
 	@Override
 	public L classify(V v) {
-		// TODO: If the targeted decisionFeature is less than or equal to the maxFeatureValue, ask the left subtree.
-		//       Otherwise, ask the right subtree.
-		//       DTTest.testInterior() should pass when this works.
-		return null;
-	}
+        if (maxFeatureValue.compareTo(getFeatureValue.apply(v, decisionFeature)) >= 0) {
+            return left.classify(v);
+        } else {
+            return right.classify(v);
+        }
+    }
 
 	@Override
 	public void addAllLabels(Set<L> labels) {
