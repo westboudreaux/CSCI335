@@ -59,7 +59,9 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
                 allFeatures.apply(data);
             }
             else {
-                reducedFeatures(data, allFeatures, 2); // TODO: what is the target number supposed to be??
+                reducedFeatures(data, allFeatures, 2); //
+                // TODO: what is the target number supposed to be??
+                // sqrt of # of features cast to int
             }
 			//  If restrictFeatures is true, call reducedFeatures() to get sqrt(# features)
 			//  of possible features/values as candidates for the split. In either case,
@@ -91,26 +93,16 @@ public class DTTrainer<V,L, F, FV extends Comparable<FV>> {
 	}
 
 	public static <V,L> double getGini(ArrayList<Duple<V,L>> data) {
-		// TODO: Calculate the Gini coefficient:
-		//  For each label, calculate its portion of the whole (p_i).
         Histogram<L> h = new Histogram<>();
         ArrayList<Double> portionsSQ = new ArrayList<>();
         Double sum = 0.0;
         for (Duple<V,L> datum: data) {
-            portionsSQ.add(h.getPortionFor(datum.getSecond()) * h.getPortionFor(datum.getSecond()));
+            h.bump(datum.getSecond());
         }
-        for (Double item: portionsSQ) {
-            sum += item;
+        for (L item: h) {
+            sum += ((h.getPortionFor(item)) * h.getPortionFor(item));
         }
-
         return 1.0 - sum;
-
-
-
-		//  Use of a Histogram<L> for this purpose is recommended.
-		//  Gini coefficient is 1 - sum(for all labels i, p_i^2)
-		//  Should pass DTTest.testGini().
-
 	}
 
 	public static <V,L> double gain(ArrayList<Duple<V,L>> parent, ArrayList<Duple<V,L>> child1,
