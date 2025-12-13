@@ -2,12 +2,10 @@ package maze.heuristics;
 
 import core.Pos;
 import maze.core.MazeExplorer;
-import search.bestfirst.BestFirstQueue;
 
-import java.util.Set;
 import java.util.function.ToIntFunction;
 
-public class Curiosity implements ToIntFunction<MazeExplorer> {
+public class ImprovedManhattan implements ToIntFunction<MazeExplorer> {
 
 
 
@@ -16,14 +14,8 @@ public class Curiosity implements ToIntFunction<MazeExplorer> {
         MazeExplorer goal = node.getGoal();
         Pos current = node.getLocation();
         Pos end = goal.getLocation();
+        int weight = current.getX() / node.getM().getXSize() * node.getM().getEnd().getX();
 
-        int base = current.getManhattanDist(end);
-        int curiosity = node.getSuccessors().size();
-        int bonus = 10;
-
-        return base - bonus * curiosity;
-
-
+        return weight * current.getManhattanDist(end);
     }
-
 }

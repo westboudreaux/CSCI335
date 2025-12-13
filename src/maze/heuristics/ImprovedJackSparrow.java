@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.ToIntFunction;
 
-public class JackSparrow implements ToIntFunction<MazeExplorer> {
+public class ImprovedJackSparrow implements ToIntFunction<MazeExplorer> {
 
 
 
@@ -25,12 +25,11 @@ public class JackSparrow implements ToIntFunction<MazeExplorer> {
                 int dist = current.getManhattanDist(loot);
                 if(dist < best){
                     best = dist;
-                    return best;
+                    return best + current.getManhattanDist(goal.getLocation());
                 }
             }
         }
 
         return current.getManhattanDist(goal.getLocation());
     }
-    //Think you can probably also check successors distance to treasure to maybe make this one better
 }
