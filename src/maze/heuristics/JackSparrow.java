@@ -2,33 +2,34 @@ package maze.heuristics;
 
 import core.Pos;
 import maze.core.MazeExplorer;
-import search.bestfirst.BestFirstQueue;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.ToIntFunction;
 
-public class GreedyHeuristic implements ToIntFunction<MazeExplorer> {
+public class JackSparrow implements ToIntFunction<MazeExplorer> {
 
 
 
     @Override
     public int applyAsInt(MazeExplorer node) {
-        // create some better estimate for the nearest treasure
-        // the goal of this heuristic will be to collect all treasure disregarding the distance to them
         Pos current = node.getLocation();
         MazeExplorer goal = node.getGoal();
         Set<Pos> booty = node.getAllTreasureFromMaze();
         Set<Pos> collected = node.getAllTreasureFound();
-
+        int best = Integer.MAX_VALUE;
 
         for(Pos loot : booty){
             if(!collected.contains(loot)){
                 int dist = current.getManhattanDist(loot);
-                return dist + 1;
+                if(dist < best){
+                    best = dist;
+                }
             }
         }
 
-        return current.getManhattanDist(goal.getLocation());
+        return best;
     }
-
+    //Think you can probably also check successors distance to treasure to maybe make this one better
 }

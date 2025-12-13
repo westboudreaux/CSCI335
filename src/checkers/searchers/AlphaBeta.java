@@ -1,3 +1,4 @@
+
 package checkers.searchers;
 
 import checkers.core.Checkerboard;
@@ -6,18 +7,12 @@ import checkers.core.Move;
 import checkers.core.PlayerColor;
 import core.Duple;
 
+
 import java.util.Optional;
 import java.util.function.ToIntFunction;
 
-//. Determine the depth it can generally reach in about ten seconds of time.
-// This number will vary considerably based on the specifics of the board position,
-// so for this purpose try to figure out what the worst case is like.
-
-//use maxdepth as the base case to kick off recursion
-//subtract until it gets to one each loop
-//return the evaluator
-public class NegaMax extends CheckersSearcher {
-    public NegaMax(ToIntFunction<Checkerboard> e) {
+public class AlphaBeta extends CheckersSearcher {
+    public AlphaBeta(ToIntFunction<Checkerboard> e) {
         super(e);
     }
     int numNodes = 0;
@@ -28,9 +23,9 @@ public class NegaMax extends CheckersSearcher {
 
     @Override
     public Optional<Duple<Integer, Move>> selectMove(Checkerboard board) {
-        return selectMoveHelper(board, getDepthLimit());
+        return selectMoveHelper(board, getDepthLimit(), -Integer.MAX_VALUE, Integer.MAX_VALUE);
     }
-    public Optional<Duple<Integer, Move>> selectMoveHelper(Checkerboard board, int depth_limit) {
+    public Optional<Duple<Integer, Move>> selectMoveHelper(Checkerboard board, int depth_limit, int alpha, int beta) {
         Optional<Duple<Integer, Move>> best = Optional.empty();
         Optional<Duple<Integer, Move>> new_move = Optional.empty();
         PlayerColor current_player = board.getCurrentPlayer();
@@ -66,15 +61,22 @@ public class NegaMax extends CheckersSearcher {
         for (Checkerboard alternative: board.getNextBoards()) {
             numNodes += 1;
             int negation = board.getCurrentPlayer() != alternative.getCurrentPlayer() ? -1 : 1;
-            new_move = selectMoveHelper(alternative, depth_limit - 1);
+            new_move = selectMoveHelper(alternative, depth_limit - 1, -beta, -alpha);
             int new_score = negation * new_move.get().getFirst();
             if (new_move.isEmpty() || new_score > best_score) {
                 best_score = new_score;
                 best_move = alternative.getLastMove();
+                alpha = new_score;
+                if (alpha >= beta) {
+                    break;
+                }
+
             }
         }
         best = Optional.of(new Duple<>(best_score, best_move));
         return best;
     }
 
+//have select move as a other function, put the new "helper" function in it.
+//this should be a new function. This allows depth limit, alpha, beta, etc. to be parameters
 }
